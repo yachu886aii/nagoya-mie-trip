@@ -147,6 +147,52 @@ section{margin-bottom:40px}
 .map-extra{font-size:13px;padding:7px 10px;margin-top:6px;border:2px dashed var(--ink);border-radius:12px;background:var(--paper)}
 .map-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
 .map-note{font-size:11.5px;opacity:.65;flex:1;min-width:160px;line-height:1.5}
+/* 天氣卡 */
+.wx-card{margin-top:16px;padding:14px 14px 10px}
+.wx-head{display:flex;align-items:center;gap:12px}
+.wx-ico{flex:none;width:64px;height:64px;border:var(--bw) solid var(--ink);border-radius:20px;background:var(--paper);display:grid;place-items:center}
+.wx-main{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.wx-label{font-size:12.5px;opacity:.7}
+.wx-temp{font-weight:400;font-size:28px;line-height:1.15}
+.wx-temp span{font-size:18px;opacity:.7}
+.wx-desc{font-size:12.5px}
+.wx-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.wx-chip{font-size:13px;padding:4px 11px;border:2.5px solid var(--ink);border-radius:999px;line-height:1.35}
+.wx-chip.rain{background:var(--c)}
+.wx-chip.wear{background:var(--paper)}
+.wx-tip{margin-top:10px;font-size:13.5px;padding:8px 11px;border-radius:14px;border:2px dashed var(--ink);background:var(--paper)}
+.wx-fol{margin-top:12px;border-top:2.5px dashed var(--ink);padding-top:10px}
+.wx-fol-t{font-size:13.5px;margin-bottom:4px}
+.fol-row{display:flex;gap:10px;align-items:flex-start;padding:5px 0;font-size:13.5px;line-height:1.4}
+.fol-leaf{flex:none;width:58px;text-align:center;font-size:15px;letter-spacing:-2px}
+.fol-txt b{font-weight:400}
+.fol-txt small{display:block;font-size:12px;opacity:.7}
+.wx-more{margin-top:10px;border-top:2.5px dashed var(--ink);padding-top:8px}
+.wx-more summary{cursor:pointer;font-size:13.5px;padding:4px 0;list-style:none;display:flex;align-items:center;gap:6px}
+.wx-more summary::-webkit-details-marker{display:none}
+.wx-more summary::before{content:"▸";display:inline-block;transition:transform .2s}
+.wx-more[open] summary::before{transform:rotate(90deg)}
+.wx-spots{list-style:none;margin-top:4px}
+.wx-spots li{padding:9px 0;border-top:2px dashed rgba(62,58,57,.2)}
+.wx-spots li:first-child{border-top:0}
+.wx-sp{display:flex;align-items:center;gap:6px;font-size:13.5px;line-height:1.35}
+.wx-sp svg{flex:none}
+.wx-kind{font-size:11px;margin-left:6px;padding:0 6px;border:1.5px solid var(--ink);border-radius:999px;background:var(--yama);vertical-align:1px}
+.wx-pills{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0 32px}
+.wx-pill{font-size:12px;padding:2px 9px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
+.wx-pill b{font-weight:400;opacity:.65;margin-right:4px}
+.wx-est,.wx-note{font-size:12px;margin:4px 0 0 32px;line-height:1.5}
+.wx-est{padding:6px 9px;border-radius:10px;background:var(--mizu);border:2px solid var(--ink)}
+.wx-note{opacity:.75}
+.wx-adv{font-size:13px;margin-top:8px;line-height:1.55}
+.wx-adv b{font-weight:400;display:inline-block;margin-right:6px;padding:0 8px;border:2px solid var(--ink);border-radius:999px;background:var(--yama);font-size:12px}
+.wx-src{font-size:11.5px;opacity:.6;margin-top:8px}
+.tab-wx{display:flex;flex-direction:column;align-items:center;margin-top:2px}
+.tab-wx i{font-style:normal;font-size:11px}
+@keyframes drops{0%{transform:translateY(-3px);opacity:0}30%{opacity:1}100%{transform:translateY(4px);opacity:0}}
+.wx-drops line{animation:drops 1.2s linear infinite}
+.wx-drops line:nth-child(2){animation-delay:.4s}
+.wx-drops line:nth-child(3){animation-delay:.8s}
 .pop{animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0) * 70ms)}
 .swipe-hint{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;opacity:.7;margin:-2px 0 10px}
 .swipe-hint .dots{display:flex;gap:5px}
@@ -835,7 +881,7 @@ function gmapURL(R){
 function mapCard(i, animate){
   const R = ROUTES[i];
   const legs = R.legs.map((lg,j) => `<li><span class="lg-name">${NUMS[j]} ${R.stops[j].n} → ${NUMS[j+1]} ${R.stops[j+1].n}</span><span class="lg-t">${tagHTML(lg.m)}<b>${lg.t}</b></span>${lg.s?`<span class="lg-s">${lg.s}</span>`:''}</li>`).join('');
-  return `<div class="card map-card ${animate?'pop':''}" style="--i:1;--c:var(--${DAYS[i].c})">
+  return `<div class="card map-card ${animate?'pop':''}" style="--i:2;--c:var(--${DAYS[i].c})">
     <div class="map-head"><span aria-hidden="true">🗺</span><h4>今日路線</h4><span class="map-total">${R.walk?'':'車程合計 '}${R.total}</span></div>
     ${mapSVG(i)}
     <ul class="legs" aria-label="各段車程">${legs}</ul>
@@ -847,12 +893,77 @@ function mapCard(i, animate){
   </div>`;
 }
 
+const WX_UPDATED = '11/17 09:40';
+const WX = [{"date": "11/19", "spot": "中部機場（20:50 抵達）・住 Four Points", "kind": "預報", "t_w": "晴時多雲", "t_hi": 15, "t_lo": 11, "t_rain": 40, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 10, "w_rain": 20, "est": null, "note": "晚上落地時逐時預報都是晴，降雨 0–10%，約 9–10°C"}, {"date": "11/20", "spot": "御在所纜車・山下", "kind": "預報", "t_w": "晴時多雲", "t_hi": 12, "t_lo": 5, "t_rain": 40, "w_w": "晴時多雲", "w_hi": 13, "w_lo": 5, "w_rain": 20, "est": null, "note": "纜車維修或風太大停駛時，改去名花之里"}, {"date": "11/20", "spot": "御在所・山上（約 1100m）", "kind": "推算", "t_w": "晴・強風", "t_hi": 1, "t_lo": 0, "t_rain": null, "w_w": null, "w_hi": null, "w_lo": null, "w_rain": null, "est": "白天約 0°C，西北西風約 16 m/s，體感約 −8°C（tenki.jp 高度別數值計算，不是正式預報）", "note": null}, {"date": "11/20", "spot": "VISON", "kind": "預報", "t_w": "晴時多雲", "t_hi": 12, "t_lo": 6, "t_rain": 40, "w_w": "晴時多雲", "w_hi": 13, "w_lo": 4, "w_rain": 20, "est": null, "note": null}, {"date": "11/20", "spot": "御木本真珠島・住 石鏡（以志摩市代替）", "kind": "代替", "t_w": "晴時多雲", "t_hi": 14, "t_lo": 8, "t_rain": 20, "w_w": "晴時多雲", "w_hi": 13, "w_lo": 5, "w_rain": 20, "est": null, "note": "飯店在山坡面海，風較大"}, {"date": "11/21", "spot": "夫婦岩・伊勢神宮・御蔭橫丁", "kind": "預報", "t_w": "晴", "t_hi": 14, "t_lo": 4, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 2, "w_rain": 20, "est": null, "note": "早上很冷，Weathernews 最低 2°C"}, {"date": "11/21", "spot": "鬼之城", "kind": "預報", "t_w": "晴", "t_hi": 15, "t_lo": 6, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 15, "w_lo": 5, "w_rain": 20, "est": null, "note": null}, {"date": "11/21", "spot": "住 Mercure 串本", "kind": "預報", "t_w": "晴", "t_hi": 15, "t_lo": 8, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 8, "w_rain": 20, "est": null, "note": "露天風呂面海，泡完出來會冷"}, {"date": "11/22", "spot": "太地鯨魚博物館", "kind": "預報", "t_w": "晴", "t_hi": 15, "t_lo": 7, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 15, "w_lo": 7, "w_rain": 20, "est": null, "note": null}, {"date": "11/22", "spot": "那智大社・熊野古道・青岸渡寺・那智瀑布", "kind": "預報", "t_w": "晴", "t_hi": 15, "t_lo": 5, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 15, "w_lo": 7, "w_rain": 20, "est": null, "note": "那智大社約海拔 350m，早上約 3–5°C（推算）"}, {"date": "11/22", "spot": "住 Quintessa 伊勢志摩", "kind": "預報", "t_w": "晴", "t_hi": 14, "t_lo": 6, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 3, "w_rain": 20, "est": null, "note": null}, {"date": "11/23", "spot": "賢島遊船・海女小屋", "kind": "預報", "t_w": "晴時多雲", "t_hi": 15, "t_lo": 6, "t_rain": 20, "w_w": "晴時多雲", "w_hi": 15, "w_lo": 3, "w_rain": 20, "est": null, "note": "前兩天的「晴後雨」已消失"}, {"date": "11/23", "spot": "名古屋逛街", "kind": "預報", "t_w": "晴", "t_hi": 15, "t_lo": 3, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 3, "w_rain": 20, "est": null, "note": "晚上逛街約 3–5°C"}, {"date": "11/23", "spot": "住 Four Points（回到機場）", "kind": "預報", "t_w": "晴", "t_hi": 14, "t_lo": 4, "t_rain": 10, "w_w": "晴時多雲", "w_hi": 14, "w_lo": 6, "w_rain": 20, "est": null, "note": null}, {"date": "11/24", "spot": "中部機場（09:50 起飛）", "kind": "預報", "t_w": "多雲後雨", "t_hi": 13, "t_lo": 6, "t_rain": 90, "w_w": "多雲時有雨", "w_hi": 15, "w_lo": 10, "w_rain": 60, "est": null, "note": "雨可能從早上就開始"}];
+const WX_ADV = [{"date": "11/19", "rain_level": "low", "rain_short": "不用帶傘", "wear_short": "長袖＋薄外套", "tip": "落地後天氣晴，晚上約 9–10°C", "rain_gear": "晚上落地時降雨 0–10%", "clothing": "長袖＋薄外套；晚上抵達約 9–10°C"}, {"date": "11/20", "rain_level": "mid", "rain_short": "折傘放包包", "wear_short": "羽絨＋防風外套、毛帽手套圍巾、暖暖包", "tip": "山上約 0 度、風很大；風太大纜車可能停駛，會改去名花之里", "rain_gear": "tenki.jp 40%、Weathernews 20%", "clothing": "山上白天約 0°C、體感約 −8°C：發熱衣＋刷毛或毛衣＋羽絨外套＋防風外層，毛帽、手套、圍巾、暖暖包都要帶；山下 12–13°C"}, {"date": "11/21", "rain_level": "low", "rain_short": "折傘備用", "wear_short": "長袖＋毛衣＋外套", "tip": "早上很冷（約 2–4°C），中午變暖，可以脫外套", "rain_gear": "降雨 10–20%", "clothing": "早上 2–4°C（伊勢）、白天約 14–15°C：發熱衣＋毛衣＋外套，洋蔥式穿法"}, {"date": "11/22", "rain_level": "low", "rain_short": "折傘備用", "wear_short": "好脫的外套＋好走的鞋", "tip": "石階很多，要穿好走的鞋，慢慢走", "rain_gear": "兩家都是 10–20%；石階多，建議穿止滑的鞋", "clothing": "排汗內層＋好脫的外套；那智山區早上約 3–5°C、白天約 14–16°C"}, {"date": "11/23", "rain_level": "low", "rain_short": "折傘備用", "wear_short": "防風外套＋圍巾", "tip": "下雨的預報消失了；名古屋晚上很冷，約 3°C", "rain_gear": "兩家都是 10–20%", "clothing": "遊船風大穿防風外套；名古屋晚上約 3–5°C，加圍巾"}, {"date": "11/24", "rain_level": "high", "rain_short": "要帶傘", "wear_short": "防水外套", "tip": "可能一早就下雨，傘放隨身包", "rain_gear": "tenki.jp 90%（多雲後雨）、Weathernews 60%", "clothing": "防水外套；機場約 6–10°C"}];
+const WX_FOL = [{"date": "11/20", "spot": "御在所山頂", "simple": "葉子已經掉了", "leaf": "🍂", "detail": "11/13 起大多落葉"}, {"date": "11/20", "spot": "纜車半山腰", "simple": "最漂亮的時候", "leaf": "🍁🍁🍁", "detail": "約 7–8 成轉紅，11/25 起落葉"}, {"date": "11/20", "spot": "山腳溫泉街", "simple": "剛好開始最漂亮", "leaf": "🍁🍁🍁", "detail": "約 5 成變色，Weathernews 預估 11/19 起見頃"}, {"date": "11/21", "spot": "伊勢神宮", "simple": "快要最漂亮", "leaf": "🍁🍁", "detail": "約 3 成變色，預估 11/21–22 起見頃"}, {"date": "11/22", "spot": "那智大社、那智瀑布", "simple": "剛開始變色", "leaf": "🍁", "detail": "約 2 成，見頃預估 11/26 左右"}, {"date": "11/23", "spot": "名古屋 銀杏", "simple": "可能正金黃", "leaf": "💛💛💛", "detail": "平年 11/18 轉黃"}, {"date": "11/23", "spot": "名古屋 楓葉", "simple": "還沒變紅", "leaf": "🌿", "detail": "平年 11/28 轉紅"}];
+
+/* ---------- 天氣（抄錄自天氣・紅葉儀表板） ---------- */
+function wxIcon(w, size){
+  const sz = size || 48;
+  const cloud = (dx,dy,sc) => `<path transform="translate(${dx} ${dy}) scale(${sc})" d="M14 38 Q6 38 7 31 Q8 25 15 26 Q17 18 26 18 Q35 18 37 26 Q44 26 44 32 Q44 38 37 38 Z" fill="#fff"/>`;
+  const sun = (cx,cy,r) => `<g class="a-spin">${[0,45,90,135,180,225,270,315].map(a=>{const rad=a*Math.PI/180;return `<line x1="${(cx+Math.cos(rad)*(r+3)).toFixed(1)}" y1="${(cy+Math.sin(rad)*(r+3)).toFixed(1)}" x2="${(cx+Math.cos(rad)*(r+7)).toFixed(1)}" y2="${(cy+Math.sin(rad)*(r+7)).toFixed(1)}"/>`}).join('')}</g><circle cx="${cx}" cy="${cy}" r="${r}" fill="#F6D27A"/>`;
+  let g;
+  w = w || '';
+  if (/雨/.test(w)) g = cloud(-2,-6,1.05) + `<g class="wx-drops" stroke="#A8D3E6" stroke-width="3"><line x1="17" y1="38" x2="14" y2="45"/><line x1="26" y1="38" x2="23" y2="45"/><line x1="35" y1="38" x2="32" y2="45"/></g>`;
+  else if (/強風/.test(w)) g = sun(20,20,8) + `<g fill="none" class="a-sway"><path d="M24 34 H40 q5 0 4 -4"/><path d="M14 41 H34 q5 0 4 4"/></g>`;
+  else if (/雲/.test(w)) g = sun(18,17,8) + `<g class="a-drift">${cloud(4,2,0.82)}</g>`;
+  else g = sun(24,24,10);
+  return `<svg viewBox="0 0 48 48" width="${sz}" height="${sz}" aria-hidden="true"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">${g}</g></svg>`;
+}
+function dayWx(i){
+  const md = DAYS[i].md;
+  const spots = WX.filter(w => w.date === md);
+  const real = spots.filter(w => !w.est);
+  const main = real.find(w => !/^住/.test(w.spot)) || real[0];
+  const nums = a => a.filter(v => typeof v === 'number');
+  const hi = Math.max(...nums(real.flatMap(w => [w.t_hi, w.w_hi])));
+  const lo = Math.min(...nums(real.flatMap(w => [w.t_lo, w.w_lo])));
+  const tRain = Math.max(...nums(real.map(w => w.t_rain)));
+  const wRain = Math.max(...nums(real.map(w => w.w_rain)));
+  return {spots, main, hi, lo, tRain, wRain, adv: WX_ADV.find(a => a.date === md), fol: WX_FOL.filter(f => f.date === md)};
+}
+const RAIN_C = {low:'green', mid:'yama', high:'coral'};
+function wxCard(i, animate){
+  const W = dayWx(i), a = W.adv || {};
+  const pill = (src, w, hi, lo, rain) => w == null ? '' : `<span class="wx-pill"><b>${src}</b>${esc(w)}・${hi}°/${lo}°${rain!=null?`・☂${rain}%`:''}</span>`;
+  const rows = W.spots.map(w => `<li>
+      <div class="wx-sp">${wxIcon(w.t_w, 26)}<span>${esc(w.spot)}${w.kind!=='預報'?`<small class="wx-kind">${esc(w.kind)}</small>`:''}</span></div>
+      ${w.est ? `<p class="wx-est">${esc(w.est)}</p>` : `<div class="wx-pills">${pill('tenki.jp', w.t_w, w.t_hi, w.t_lo, w.t_rain)}${pill('Weathernews', w.w_w, w.w_hi, w.w_lo, w.w_rain)}</div>`}
+      ${w.note ? `<p class="wx-note">${esc(w.note)}</p>` : ''}
+    </li>`).join('');
+  const fol = W.fol.length ? `<div class="wx-fol"><p class="wx-fol-t">🍁 紅葉狀況</p>${W.fol.map(f=>`<div class="fol-row"><span class="fol-leaf" aria-hidden="true">${f.leaf}</span><span class="fol-txt"><b>${esc(f.spot)}</b>・${esc(f.simple)}<small>${esc(f.detail)}</small></span></div>`).join('')}</div>` : '';
+  return `<div class="card wx-card ${animate?'pop':''}" style="--i:1;--c:var(--${RAIN_C[a.rain_level]||'green'})" id="wx-day${i+1}">
+    <div class="wx-head">
+      <div class="wx-ico">${wxIcon(W.main.t_w, 56)}</div>
+      <div class="wx-main">
+        <span class="wx-label">今日天氣</span>
+        <b class="wx-temp">${W.hi}° <span>/ ${W.lo}°</span></b>
+        <span class="wx-desc">${esc(W.main.t_w)}・降雨 ${W.tRain}%（tenki.jp）／${W.wRain}%（WN）</span>
+      </div>
+    </div>
+    <div class="wx-chips">
+      <span class="wx-chip rain">☂ ${esc(a.rain_short||'')}</span>
+      <span class="wx-chip wear">🧥 ${esc(a.wear_short||'')}</span>
+    </div>
+    ${a.tip ? `<p class="wx-tip">💡 ${esc(a.tip)}</p>` : ''}
+    ${fol}
+    <details class="wx-more">
+      <summary>各景點預報・穿搭細節</summary>
+      <ul class="wx-spots">${rows}</ul>
+      <p class="wx-adv"><b>穿搭</b>${esc(a.clothing||'')}</p>
+      <p class="wx-adv"><b>雨具</b>${esc(a.rain_gear||'')}</p>
+    </details>
+    <p class="wx-src">預報抄錄自 tenki.jp、Weathernews（${WX_UPDATED} 更新），出發前仍可能變動。</p>
+  </div>`;
+}
+
 const NOTE_C = {warn:'yama', gift:'coral', tip:'green'};
 const MEAL_L = ['早','午','晚'];
 const MEAL_C = ['yama','coral','mizu'];
 
 const tabs = $('#day-tabs'), panel = $('#day-panel');
-tabs.innerHTML = DAYS.map((d,i) => `<button class="day-tab" role="tab" id="tab-${i}" aria-controls="day-panel" aria-selected="false" tabindex="-1" data-i="${i}" style="--c:var(--${d.c})"><span class="dn">Day ${i+1}</span><span class="dd">${d.md}</span><span class="dw">週${d.wd}</span></button>`).join('');
+tabs.innerHTML = DAYS.map((d,i) => `<button class="day-tab" role="tab" id="tab-${i}" aria-controls="day-panel" aria-selected="false" tabindex="-1" data-i="${i}" style="--c:var(--${d.c})"><span class="dn">Day ${i+1}</span><span class="dd">${d.md}</span><span class="dw">週${d.wd}</span><span class="tab-wx">${wxIcon(dayWx(i).tRain >= 60 ? '雨' : dayWx(i).main.t_w, 22)}<i>${dayWx(i).hi}°/${dayWx(i).lo}°</i></span></button>`).join('');
 
 let curDay = 0;
 function renderDay(i, animate, dir){
@@ -869,7 +980,7 @@ function renderDay(i, animate, dir){
   if (animate && !RM.matches){ void cur.offsetWidth; cur.classList.add('boing'); }
   panel.setAttribute('aria-labelledby', 'tab-' + i);
   const tl = d.items.map((it,k) => `
-    <li class="tl-item ${animate?'pop':''}" style="--i:${k+2};--c:var(--${d.c})">
+    <li class="tl-item ${animate?'pop':''}" style="--i:${k+3};--c:var(--${d.c})">
       <div class="tl-time">${it.time}</div>
       <div class="tl-dot"></div>
       <div class="tl-card">
@@ -890,6 +1001,7 @@ function renderDay(i, animate, dir){
       <div class="meals">${d.meals.map((m,k)=>`<div class="meal" style="--c:var(--${MEAL_C[k]})"><i>${MEAL_L[k]}</i><span>${m}</span></div>`).join('')}</div>
       ${d.stay ? `<div class="stay"><svg aria-hidden="true"><use href="#n-bed"/></svg>今晚住：${d.stay}</div>` : ''}
     </div>
+    ${wxCard(i, animate)}
     ${mapCard(i, animate)}
     <ol class="timeline">${tl}</ol>`;
   panel.classList.remove('slide-l','slide-r');
@@ -997,14 +1109,14 @@ const LISTS = {
   pack:{title:'行李清單', emoji:'🧳', add:'新增行李…', groups:[
     {name:'證件・錢包', items:[
       {id:'p1', t:'護照'}, {id:'p2', t:'日幣＋信用卡'}, {id:'p3', t:'少量台幣（回程交通）'}, {id:'p4', t:'旅平險保單資料'}]},
-    {name:'衣物', hint:'11 月是秋天，洋蔥式穿搭；御在所山上更冷', items:[
-      {id:'c1', t:'薄長袖上衣'}, {id:'c2', t:'防風／保暖外套'}, {id:'c3', t:'好走的鞋'}, {id:'c4', t:'換洗衣物 5 天份'}, {id:'c5', t:'睡衣'}, {id:'c6', t:'圍巾、帽子'}]},
+    {name:'衣物', hint:'依最新預報：平地 3–15°C；11/20 御在所山上約 0°C、強風體感約 −8°C', items:[
+      {id:'c1', t:'薄長袖上衣'}, {id:'c9', t:'發熱衣', s:'早晚 2–5°C 用得到'}, {id:'c7', t:'羽絨外套', s:'11/20 御在所山上必備'}, {id:'c2', t:'防風／防水外套', s:'山上擋風、遊船、11/24 可能下雨'}, {id:'c3', t:'好走的鞋', s:'那智石階多，最好止滑'}, {id:'c4', t:'換洗衣物 5 天份'}, {id:'c5', t:'睡衣'}, {id:'c6', t:'圍巾、毛帽'}, {id:'c8', t:'手套'}]},
     {name:'盥洗保養', hint:'行程表建議牙刷牙膏、刮鬍刀、拖鞋自備', items:[
       {id:'t1', t:'牙刷、牙膏'}, {id:'t2', t:'刮鬍刀'}, {id:'t3', t:'拖鞋'}, {id:'t4', t:'保濕乳液、護唇膏'}, {id:'t5', t:'防曬乳'}]},
     {name:'電子產品', hint:'日本插座和台灣一樣（A 型、100V），不用轉接頭', items:[
       {id:'e1', t:'手機＋充電線'}, {id:'e2', t:'行動電源（最多 2 個、隨身）'}, {id:'e3', t:'耳機'}, {id:'e4', t:'SIM 卡針'}]},
     {name:'其他', items:[
-      {id:'o1', t:'折傘或輕便雨衣'}, {id:'o2', t:'常備藥品'}, {id:'o3', t:'購物袋（裝伴手禮）'}, {id:'o4', t:'口罩'}, {id:'o5', t:'素食備品（如有需要）'}]}
+      {id:'o1', t:'折傘或輕便雨衣', s:'11/24 回程日降雨 60–90%'}, {id:'o6', t:'暖暖包', s:'御在所山上用'}, {id:'o2', t:'常備藥品'}, {id:'o3', t:'購物袋（裝伴手禮）'}, {id:'o4', t:'口罩'}, {id:'o5', t:'素食備品（如有需要）'}]}
   ]}
 };
 LISTS.shop = {title:'購物・伴手禮・御守清單', emoji:'🛍', add:'想買的東西…', add2:'送給誰／備註（可不填）',
