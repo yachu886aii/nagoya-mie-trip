@@ -617,6 +617,8 @@ const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
+const todayIn = tz => { try{ return new Intl.DateTimeFormat('en-CA',{timeZone:tz}).format(new Date()); }catch(e){ return new Date().toISOString().slice(0,10); } };
+const todayJP = todayIn('Asia/Tokyo'); // 旅途中以日本當地日期為準
 const todayTW = (() => { try{ return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei'}).format(new Date()); }catch(e){ return new Date().toISOString().slice(0,10); } })();
 
 /* ---------- 倒數 ---------- */
@@ -636,7 +638,8 @@ function tick(){
     $('#cd-d').textContent = d; $('#cd-h').textContent = pad(h);
     $('#cd-m').textContent = pad(m); $('#cd-s').textContent = pad(s);
   } else if (now < BACK){
-    const n = Math.min(6, Math.floor((now - START)/86400000) + 1);
+    const TRIP = ['2026-11-19','2026-11-20','2026-11-21','2026-11-22','2026-11-23','2026-11-24'];
+    const n = Math.max(1, TRIP.indexOf(todayIn('Asia/Tokyo')) + 1);
     box.innerHTML = '<p class="cd-msg">🎒 旅程進行中・第 ' + n + ' 天</p><p class="cd-label">玩得開心，記得跟緊領隊！</p>';
     clearInterval(timer);
   } else {
@@ -963,7 +966,7 @@ const MEAL_L = ['早','午','晚'];
 const MEAL_C = ['yama','coral','mizu'];
 
 const tabs = $('#day-tabs'), panel = $('#day-panel');
-tabs.innerHTML = DAYS.map((d,i) => `<button class="day-tab" role="tab" id="tab-${i}" aria-controls="day-panel" aria-selected="false" tabindex="-1" data-i="${i}" style="--c:var(--${d.c})"><span class="dn">Day ${i+1}</span><span class="dd">${d.md}</span><span class="dw">週${d.wd}</span><span class="tab-wx">${wxIcon(dayWx(i).tRain >= 60 ? '雨' : dayWx(i).main.t_w, 22)}<i>${dayWx(i).hi}°/${dayWx(i).lo}°</i></span></button>`).join('');
+tabs.innerHTML = DAYS.map((d,i) => `<button class="day-tab" role="tab" id="tab-${i}" aria-controls="day-panel" aria-selected="false" tabindex="-1" data-i="${i}" style="--c:var(--${d.c})"><span class="dn">${d.date === todayJP ? '⭐ 今天' : 'Day ' + (i+1)}</span><span class="dd">${d.md}</span><span class="dw">週${d.wd}</span><span class="tab-wx">${wxIcon(dayWx(i).tRain >= 60 ? '雨' : dayWx(i).main.t_w, 22)}<i>${dayWx(i).hi}°/${dayWx(i).lo}°</i></span></button>`).join('');
 
 let curDay = 0;
 function renderDay(i, animate, dir){
@@ -1027,7 +1030,8 @@ tabs.addEventListener('keydown', e => {
   e.preventDefault(); renderDay(n, true, n > cur ? 1 : -1); tabs.children[n].focus();
 });
 $('#day-dots').innerHTML = DAYS.map(()=>'<i></i>').join('');
-const startIdx = Math.max(0, DAYS.findIndex(d => d.date === todayTW));
+// 出發後（11/19–11/24）預設打開當天；出發前與回國後打開 Day 1
+const startIdx = Math.max(0, DAYS.findIndex(d => d.date === todayJP));
 renderDay(startIdx, false);
 
 /* ---------- 左右滑動換天 ---------- */
