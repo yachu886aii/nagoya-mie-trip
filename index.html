@@ -1267,6 +1267,24 @@ const setOn = href => links.forEach(a => {
   a.classList.toggle('on', on);
   if (on) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current');
 });
+/* ---------- 出發後排序：伴手禮往上，行前準備與重要聯絡人往下（以台灣時間 11/19 14:45 集合為界） ---------- */
+function applyTripMode(){
+  if (new Date() < new Date('2026-11-19T14:45:00+08:00')) return;
+  try {
+    const grid = document.querySelector('#lists .lists-grid');
+    const shop = document.getElementById('list-shop');
+    if (grid && shop && grid.firstElementChild !== shop) grid.insertBefore(shop, grid.firstElementChild);
+    const lists = document.getElementById('lists');
+    const ct = document.querySelector('.card.contacts');
+    if (lists && ct && ct.parentNode !== lists) lists.appendChild(ct);
+    const t = document.getElementById('t-lists');
+    if (t && t.firstChild && t.lastChild) {
+      t.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.indexOf('準備清單') > -1) n.textContent = n.textContent.replace('準備清單', '購物・準備清單'); });
+    }
+  } catch(err){}
+}
+applyTripMode();
+
 // 不依賴瀏覽器的 #錨點跳轉：在 App 預覽等沙盒框架中錨點常常失效，改由 JS 計算位置捲動
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
