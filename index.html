@@ -1299,6 +1299,11 @@ function applyTripMode(){
     const grid = document.querySelector('#lists .lists-grid');
     const shop = document.getElementById('list-shop');
     if (grid && shop && grid.firstElementChild !== shop) grid.insertBefore(shop, grid.firstElementChild);
+    // 住宿與行程對調：行程在前、住宿在後（導覽列同步）
+    const hs = document.getElementById('hotels'), ds = document.getElementById('days');
+    if (hs && ds) hs.parentNode.insertBefore(ds, hs);
+    const nh = document.querySelector('.nav-in a[href="#hotels"]'), nd = document.querySelector('.nav-in a[href="#days"]');
+    if (nh && nd) nh.parentNode.insertBefore(nd, nh);
     const lists = document.getElementById('lists');
     const ct = document.querySelector('.card.contacts');
     if (lists && ct && ct.parentNode !== lists) lists.appendChild(ct);
