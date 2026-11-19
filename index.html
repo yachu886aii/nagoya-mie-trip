@@ -89,6 +89,18 @@ section{margin-bottom:40px}
 .h-info{grid-column:1/-1;margin-top:10px;font-size:13.5px;border-top:2.5px dashed var(--ink);padding-top:10px}
 .h-info p{margin-bottom:4px}
 .h-acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.fl-det>summary{list-style:none;cursor:pointer}
+.fl-det>summary::-webkit-details-marker{display:none}
+.fl-det>summary::after{content:"▾";margin-left:10px;display:inline-block;transition:transform .2s}
+.fl-det:not([open])>summary::after{transform:rotate(-90deg)}
+.fl-det:not([open])>.fl-top{border-bottom:0}
+.fl-top small{font-size:12.5px;opacity:.8;margin-left:6px}
+.h-det{grid-column:1/-1;margin-top:10px;border-top:2.5px dashed var(--ink);padding-top:10px}
+.h-det>summary{cursor:pointer;font-size:13.5px;list-style:none;display:flex;align-items:center;gap:6px}
+.h-det>summary::-webkit-details-marker{display:none}
+.h-det>summary::before{content:"▸";display:inline-block;transition:transform .2s}
+.h-det[open]>summary::before{transform:rotate(90deg)}
+.h-det .h-info{margin-top:8px;border-top:0;padding-top:0}
 .h-note{margin-top:14px;font-size:13.5px;padding:12px 14px;border:2.5px dashed var(--ink);border-radius:18px;background:var(--paper)}
 
 /* ---------- 每日行程 ---------- */
@@ -545,22 +557,26 @@ footer svg{width:80px;height:40px;display:block;margin:0 auto 4px}
   <h2 class="sec-title" id="t-fl"><span class="sec-ico" style="--c:var(--mizu)"><svg aria-hidden="true"><use href="#n-plane"/></svg></span>航班資訊<small>皆為當地時間</small></h2>
   <div class="grid2">
     <article class="card flight" style="--c:var(--coral)">
-      <div class="fl-top"><span>去程・11/19（四）</span><b>CI150</b></div>
+      <details class="fl-det" id="fl-out" open>
+      <summary class="fl-top"><span>去程・11/19（四）</span><b>CI150</b></summary>
       <div class="fl-main">
         <div><div class="fl-code">TPE</div><div class="fl-time">17:15</div><div class="fl-city">桃園 第二航廈</div></div>
         <div class="fl-mid"><svg viewBox="0 0 86 34" aria-hidden="true"><path d="M6 28 Q43 0 80 28" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/><use href="#s-plane" x="25" y="2" width="36" height="18"/></svg>2 小時 35 分</div>
         <div><div class="fl-code">NGO</div><div class="fl-time">20:50</div><div class="fl-city">中部國際機場</div></div>
       </div>
       <div class="fl-foot"><span>✈ 中華航空</span><span>🍱 機上簡餐</span><span>🧳 托運 1 件 23kg</span></div>
+      </details>
     </article>
     <article class="card flight" style="--c:var(--mizu)">
-      <div class="fl-top"><span>回程・11/24（二）</span><b>CI151</b></div>
+      <details class="fl-det" id="fl-back" open>
+      <summary class="fl-top"><span>回程・11/24（二）</span><b>CI151</b></summary>
       <div class="fl-main">
         <div><div class="fl-code">NGO</div><div class="fl-time">09:50</div><div class="fl-city">中部國際機場</div></div>
         <div class="fl-mid"><svg viewBox="0 0 86 34" aria-hidden="true"><path d="M6 28 Q43 0 80 28" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/><use href="#s-plane" x="25" y="2" width="36" height="18"/></svg>3 小時 25 分</div>
         <div><div class="fl-code">TPE</div><div class="fl-time">12:15</div><div class="fl-city">桃園</div></div>
       </div>
       <div class="fl-foot"><span>✈ 中華航空</span><span>🍱 機上簡餐</span><span>🧳 托運 1 件 23kg</span></div>
+      </details>
     </article>
   </div>
 
@@ -656,19 +672,28 @@ const HOTELS = [
   {name:'Mercure Wakayama Kushimoto Resort & Spa', area:'和歌山・串本', nights:['11/21（六）'], addr:'和歌山縣串本町サンゴ台1184-10', tel:'+81 735-62-7771', c:'yama', icon:'s-onsen', tags:'Resort & Spa・自助晚餐'},
   {name:'Quintessa Hotel Ise-Shima', area:'三重・志摩', nights:['11/22（日）'], addr:'三重縣志摩市阿児町鵜方1210-1', tel:'+81 599-44-0511', c:'green', icon:'s-hotel', tags:'自助晚餐'}
 ];
+// 過了集合時間：飯店預設收合，只有「今天（日本日期）」入住的那間展開；集合前全部展開
+function hotelOpen(h){
+  if (new Date() < MEET) return true;
+  const md = todayJP.slice(5).replace('-', '/').replace(/^0/, '').replace('/0', '/');
+  return h.nights.some(n => n.indexOf(md + '（') === 0);
+}
 $('#hotel-list').innerHTML = HOTELS.map(h => `
   <article class="card hotel" style="--c:var(--${h.c})">
     <div class="h-ico"><svg aria-hidden="true"><use href="#${h.icon}"/></svg></div>
     <div class="h-nights">${h.nights.map(n=>`<span class="chip">${n}</span>`).join('')}<span>${h.nights.length} 晚</span></div>
     <h3>${h.name}</h3>
     <div class="h-area">${h.area}・${h.tags}</div>
-    <div class="h-info">
-      <p>📍 ${h.addr}</p>
-      <div class="h-acts">
-        <a class="tel" href="tel:${h.tel.replace(/[^+\d]/g,'')}">📞 ${h.tel}</a>
-        <a class="tel" style="--c:var(--paper)" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name)}">🗺 地圖</a>
+    <details class="h-det"${hotelOpen(h) ? ' open' : ''}>
+      <summary>住宿資訊（地址・電話・地圖）</summary>
+      <div class="h-info">
+        <p>📍 ${h.addr}</p>
+        <div class="h-acts">
+          <a class="tel" href="tel:${h.tel.replace(/[^+\d]/g,'')}">📞 ${h.tel}</a>
+          <a class="tel" style="--c:var(--paper)" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name)}">🗺 地圖</a>
+        </div>
       </div>
-    </div>
+    </details>
   </article>`).join('');
 
 /* ---------- 交通標籤 ---------- */
@@ -1277,6 +1302,10 @@ function applyTripMode(){
     const lists = document.getElementById('lists');
     const ct = document.querySelector('.card.contacts');
     if (lists && ct && ct.parentNode !== lists) lists.appendChild(ct);
+    // 過了去程抵達時間（日本時間 11/19 20:50）：去程航班預設收合
+    if (new Date() >= new Date('2026-11-19T20:50:00+09:00')) {
+      const fo = document.getElementById('fl-out'); if (fo) fo.open = false;
+    }
     const t = document.getElementById('t-lists');
     if (t && t.firstChild && t.lastChild) {
       t.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.indexOf('準備清單') > -1) n.textContent = n.textContent.replace('準備清單', '購物・準備清單'); });
